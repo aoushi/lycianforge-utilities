@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-const displaySans = Space_Grotesk({
+const displaySans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const codeMono = JetBrains_Mono({
