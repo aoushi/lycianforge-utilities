@@ -1,0 +1,26 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+.turbo/
+.vercel/
+
+# Env / secrets
+.env*
+!.env.example
+
+# Supabase local state
+supabase/.branches
+supabase/.temp
+supabase/.env
+
+# OS junk
+Thumbs.db
+.DS_Store
+*.log
+
+# Editor artifacts
+.idea/
+.vscode/
+
+
