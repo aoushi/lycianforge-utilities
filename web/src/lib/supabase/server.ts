@@ -1,23 +1,26 @@
 import { cookies } from "next/headers";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { env } from "@/env";
 
-type CookiesType = Awaited<ReturnType<typeof cookies>>;
+type CookieStore = Awaited<ReturnType<typeof cookies>>;
 
 export async function createServerSupabaseClient() {
-  const store = await Promise.resolve(cookies());
-  const cookieStore = store as CookiesType;
+  const cookieStore = await Promise.resolve(cookies()) as CookieStore;
 
   return createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
-      get(name: string) {
-        return cookieStore.get(name)?.value;
+      getAll() {
+        return cookieStore.getAll().map(({ name, value }) => ({ name, value }));
       },
-      set(name: string, value: string, options: CookieOptions) {
-        cookieStore.set?.({ name, value, ...options });
-      },
-      remove(name: string, options: CookieOptions) {
-        cookieStore.delete?.({ name, ...options });
+      setAll(cookieEntries) {
+        const maybeSet = (cookieStore as unknown as { set?: (options: Record<string, unknown>) => void }).set;
+        if (typeof maybeSet !== "function") {
+          return;
+        }
+
+        cookieEntries.forEach(({ name, value, options }) => {
+          maybeSet({ name, value, ...options });
+        });
       },
     },
   });
