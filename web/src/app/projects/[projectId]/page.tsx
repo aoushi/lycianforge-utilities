@@ -11,12 +11,12 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectBoardPage({ params }: ProjectBoardPageProps) {
   const { projectId } = params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabaseClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     redirect("/auth/sign-in");
   }
 
