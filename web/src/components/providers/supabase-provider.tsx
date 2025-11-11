@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
@@ -20,6 +20,29 @@ type SupabaseProviderProps = {
 export function SupabaseProvider({ initialSession, children }: SupabaseProviderProps) {
   const [client] = useState(() => createBrowserSupabaseClient());
   const [session, setSession] = useState<Session | null>(initialSession);
+
+  useEffect(() => {
+    let mounted = true;
+
+    client.auth.getSession().then(({ data }) => {
+      if (mounted && data.session) {
+        setSession(data.session);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = client.auth.onAuthStateChange((_event, nextSession) => {
+      if (mounted) {
+        setSession(nextSession);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [client]);
 
   const value = useMemo(
     () => ({

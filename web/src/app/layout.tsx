@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
 import { ThemeScript } from "@/components/theme/theme-script";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -19,14 +20,19 @@ export const metadata: Metadata = {
   description: "Collaborative project management for the Lycian Forge team.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders initialSession={session}>{children}</AppProviders>
       </body>
     </html>
   );
