@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-const geistSans = Geist({
+const displaySans = Space_Grotesk({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
+const codeMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -31,7 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <ThemeScript />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}>
+      <body className={`${displaySans.variable} ${codeMono.variable} bg-background text-foreground antialiased`}>
         <AppProviders initialSession={session}>{children}</AppProviders>
       </body>
     </html>
