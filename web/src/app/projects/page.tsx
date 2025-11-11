@@ -1,4 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { CreateFirstProject } from "@/features/projects/components/create-first-project";
 
 export const dynamic = "force-dynamic";
 
@@ -8,18 +10,21 @@ export default async function ProjectsPage() {
     data: { session },
   } = await supabase.auth.getSession();
 
-  return (
-    <main className="flex min-h-[60vh] flex-col gap-4 px-8 py-16">
-      <header>
-        <h1 className="text-4xl font-semibold text-foreground">Projects</h1>
-        <p className="mt-2 max-w-2xl text-muted-foreground">
-          {session
-            ? "We are setting up your workspace. Soon you will see shared and personal projects here."
-            : "You need to be signed in to manage projects."}
-        </p>
-      </header>
-    </main>
-  );
+  if (!session) {
+    redirect("/auth/sign-in");
+  }
+
+  const { data: projects } = await supabase
+    .from("projects")
+    .select("id, name")
+    .eq("archived", false)
+    .order("created_at", { ascending: true });
+
+  if (projects && projects.length > 0) {
+    redirect(`/projects/${projects[0].id}`);
+  }
+
+  return <CreateFirstProject />;
 }
 
 
